@@ -7,6 +7,8 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/svbnbyrk/validate-ssl-cert/revoke"
 )
 
 func main() {
@@ -22,19 +24,39 @@ func main() {
 			panic("Server doesn't support SSL certificate err: " + err.Error())
 		}
 		fmt.Printf("%s support SSL certificate\n", hn)
-
 		err = conn.VerifyHostname(hn)
 		if err != nil {
 			panic("Hostname doesn't match with certificate: " + err.Error())
 		}
+		// opts := x509.VerifyOptions{
+		// 	DNSName: hn,
+		// 	Roots:   nil,
+		// }
 		
 		fmt.Printf("%s match with certificate\n", hn)
 		fmt.Println("Certificates:")
 		for i := 0; i < len(conn.ConnectionState().PeerCertificates); i++ {
-			expiry := conn.ConnectionState().PeerCertificates[i].NotAfter
-			start := conn.ConnectionState().PeerCertificates[i].NotBefore
-			fmt.Printf("\nIssuer: %s", conn.ConnectionState().PeerCertificates[i].Issuer)
-	
+			// if _, err := conn.ConnectionState().PeerCertificates[i].Verify(opts); err != nil {
+			// 	panic("failed to verify certificate: " + err.Error())
+			// }
+			cert := conn.ConnectionState().PeerCertificates[i] 
+			revoke, ok := revoke.VerifyCertificate(cert)
+
+			if(revoke == true){
+				fmt.Println("Certificate is revoked.")
+			} 
+			if(ok == false){
+				fmt.Println("Certificate is not valid.")
+			}
+			expiry := cert.NotAfter
+			start := cert.NotBefore
+			issuer:= cert.Issuer
+			subject := cert.Subject
+			fmt.Printf("\nIssuer: %s", issuer)
+			fmt.Printf("\nSubject: %s", subject)
+			if(issuer.CommonName == subject.CommonName){
+				fmt.Println("Certificate is Selfsigned. Please contact your Certificate Authority (CA)")
+			}
 			today := time.Now()
 			d := expiry.Sub(today).Hours() / 24
 			//CAB forum’s baseline requirements.
