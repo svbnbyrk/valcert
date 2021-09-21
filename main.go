@@ -28,17 +28,10 @@ func main() {
 		if err != nil {
 			panic("Hostname doesn't match with certificate: " + err.Error())
 		}
-		// opts := x509.VerifyOptions{
-		// 	DNSName: hn,
-		// 	Roots:   nil,
-		// }
 		
 		fmt.Printf("%s match with certificate\n", hn)
 		fmt.Println("Certificates:")
 		for i := 0; i < len(conn.ConnectionState().PeerCertificates); i++ {
-			// if _, err := conn.ConnectionState().PeerCertificates[i].Verify(opts); err != nil {
-			// 	panic("failed to verify certificate: " + err.Error())
-			// }
 			cert := conn.ConnectionState().PeerCertificates[i] 
 			revoke, ok := revoke.VerifyCertificate(cert)
 
