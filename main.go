@@ -33,13 +33,12 @@ func main() {
 		fmt.Println("Certificates:")
 		for i := 0; i < len(conn.ConnectionState().PeerCertificates); i++ {
 			cert := conn.ConnectionState().PeerCertificates[i]
-			isRevoke, ok := revoke.VerifyCertificate(cert)
-
+			isRevoke, ok, _ := revoke.VerifyCertificate(cert)
+			if ok != true {
+				fmt.Println("Certificate revocation check could not be completed.")
+			}
 			if isRevoke == true {
 				fmt.Println("Certificate is revoked.")
-			}
-			if ok == false {
-				fmt.Println("Certificate is not valid.")
 			}
 			expiry := cert.NotAfter
 			start := cert.NotBefore

@@ -172,23 +172,7 @@ func certIsRevokedCRL(cert *x509.Certificate, url string) (revoked, ok bool, err
 
 // VerifyCertificate ensures that the certificate passed in hasn't
 // expired and checks the CRL for the server.
-func VerifyCertificate(cert *x509.Certificate) (revoked, ok bool) {
-	revoked, ok, _ = VerifyCertificateError(cert)
-	return revoked, ok
-}
-
-// VerifyCertificateError ensures that the certificate passed in hasn't
-// expired and checks the CRL for the server.
-func VerifyCertificateError(cert *x509.Certificate) (revoked, ok bool, err error) {
-	if !time.Now().Before(cert.NotAfter) {
-		msg := fmt.Sprintf("Certificate expired %s\n", cert.NotAfter)
-		fmt.Printf(msg)
-		return true, true, fmt.Errorf(msg)
-	} else if !time.Now().After(cert.NotBefore) {
-		msg := fmt.Sprintf("Certificate isn't valid until %s\n", cert.NotBefore)
-		fmt.Printf(msg)
-		return true, true, fmt.Errorf(msg)
-	}
+func VerifyCertificate(cert *x509.Certificate) (revoked, ok bool, err error) {
 	return revCheck(cert)
 }
 
