@@ -162,7 +162,7 @@ func mustParse(pemData string) *x509.Certificate {
 	return cert
 }
 func TestCheckRevoked(t *testing.T) {
-	if revoked, ok := VerifyCertificate(revokedCert); !ok {
+	if revoked, ok , _:= VerifyCertificate(revokedCert); !ok {
 		fmt.Printf("Warning: soft fail checking revocation")
 	} else if !revoked {
 		t.Fatalf("revoked certificate should have been marked as revoked")
@@ -170,7 +170,7 @@ func TestCheckRevoked(t *testing.T) {
 }
 
 func TestCheckExpired(t *testing.T) {
-	if revoked, ok := VerifyCertificate(expiredCert); !ok {
+	if revoked, ok , _:= VerifyCertificate(expiredCert); !ok {
 		fmt.Printf("Warning: soft fail checking revocation")
 	} else if !revoked {
 		t.Fatalf("expired certificate should have been marked as revoked")
@@ -178,7 +178,7 @@ func TestCheckExpired(t *testing.T) {
 }
 
 func TestCheckGood(t *testing.T) {
-	if revoked, ok := VerifyCertificate(goodDxCert); !ok {
+	if revoked, ok , _:= VerifyCertificate(goodDxCert); !ok {
 		fmt.Printf("Warning: soft fail checking revocation")
 	} else if revoked {
 		t.Fatalf("good certificate should not have been marked as revoked")
